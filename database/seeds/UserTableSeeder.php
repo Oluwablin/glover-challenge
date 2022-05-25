@@ -21,15 +21,15 @@ class UserTableSeeder extends Seeder
                 'email_verified_at' => now(),
                 'password' => bcrypt('password'),
                 'remember_token' => Str::random(10),
-            ] .
-                [
-                    'firstname' => 'Another',
-                    'lastname' => 'Administrator',
-                    'email' => 'another_administrator@example.com',
-                    'email_verified_at' => now(),
-                    'password' => bcrypt('password'),
-                    'remember_token' => Str::random(10)
-                ]
+            ],
+            [
+                'firstname' => 'Another',
+                'lastname' => 'Administrator',
+                'email' => 'another_administrator@example.com',
+                'email_verified_at' => now(),
+                'password' => bcrypt('password'),
+                'remember_token' => Str::random(10)
+            ]
         ];
 
         foreach ($users as $key => $value) {
@@ -37,7 +37,7 @@ class UserTableSeeder extends Seeder
             if (!$check_user) {
                 $user = User::create($value);
 
-                User::factory()->count(2)->create();
+                factory(User::class, 2)->create();
             }
         }
     }
