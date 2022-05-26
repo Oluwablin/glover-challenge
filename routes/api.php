@@ -29,4 +29,20 @@ Route::group(["prefix" => "v1"], function () {
     });
 
     //Authenticated Routes
+    Route::group(['middleware' => ['auth:api']], function () {
+
+        //Requests
+        Route::group(['prefix' => 'request', 'namespace' => 'v1\RequestType'], function () {
+            Route::get('fetch/all',                 [RequestTypeController::class, 'dispalyAllPendingRequests']);
+            Route::put('approve',                   [RequestTypeController::class, 'approveRequest']);
+            Route::put('decline',                   [RequestTypeController::class, 'declineRequest']);
+        });
+
+        //UserDetails
+        Route::group(['prefix' => 'user_detail', 'namespace' => 'v1\UserDetail'], function () {
+            Route::post('create',                   [UserDetailController::class, 'createUserDetails']);
+            Route::put('update',                    [UserDetailController::class, 'updateUserDetails']);
+            Route::delete('delete',                 [UserDetailController::class, 'destroyUserDetails']);
+        });
+    });
 });

@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\v1\RequestType;
 
-use App\RequestType;
+use App\Models\RequestType;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class RequestTypeController extends Controller
 {
@@ -11,74 +12,33 @@ class RequestTypeController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
+     * display all pending requests
      */
-    public function index()
+    public function dispalyAllPendingRequests()
     {
         //
     }
 
     /**
-     * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
+     * approve a request
      */
-    public function store(Request $request)
+    public function approveRequest(Request $request)
     {
         //
     }
 
     /**
-     * Display the specified resource.
+     * 
      *
      * @param  \App\RequestType  $requestType
      * @return \Illuminate\Http\Response
+     * decline a request
      */
-    public function show(RequestType $requestType)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\RequestType  $requestType
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(RequestType $requestType)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\RequestType  $requestType
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, RequestType $requestType)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\RequestType  $requestType
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(RequestType $requestType)
+    public function declineRequest(Request $request)
     {
         //
     }
