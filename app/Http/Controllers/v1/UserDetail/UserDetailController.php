@@ -12,6 +12,8 @@ use App\Mail\ApprovalRequest;
 use App\Events\RequestApprovalEvent;
 use App\Models\UserDetail;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\CreateUserDetailRequest;
+use App\Http\Requests\UpdateUserDetailRequest;
 
 class UserDetailController extends Controller
 {
@@ -21,7 +23,7 @@ class UserDetailController extends Controller
      * @return \Illuminate\Http\Response
      * create user detail
      */
-    public function createUserDetails(Request $request)
+    public function createUserDetails(CreateUserDetailRequest $request)
     {
         try {
             DB::beginTransaction();
@@ -31,7 +33,7 @@ class UserDetailController extends Controller
                     "firstname" => $request->firstname,
                     "lastname" => $request->lastname,
                     "email" => $request->email,
-                    "request_type" => $request->request_type,
+                    "request_type_id" => $request->request_type_id,
                     "created_by" => auth()->user()->firstname . ' ' . auth()->user()->lastname,
                 ]
             );
