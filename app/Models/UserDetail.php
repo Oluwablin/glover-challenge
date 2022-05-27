@@ -22,6 +22,18 @@ class UserDetail extends Model
         'lastname',
         'email',
         'created_by',
-        'approved_by'
+        'approved_by',
+        'request_type_id'
     ];
+
+    /**
+     * Relationship with the type of request made for User Detail
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function request_type()
+    {
+        return $this->belongsTo(RequestType::class, 'request_type_id');
+    }
+
 }

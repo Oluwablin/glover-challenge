@@ -19,6 +19,7 @@ class UserDetailTableSeeder extends Seeder
                 'email'               => "random_user@example.com",
                 'created_by'          =>  "Another Administrator",
                 'approved_by'         =>  "Default Admin",
+                'request_type_id'     =>  1,
             ],
             [
                 'firstname'          => "John",
@@ -26,6 +27,7 @@ class UserDetailTableSeeder extends Seeder
                 'email'               => "john_doe@example.com",
                 'created_by'          =>  "Another Administrator",
                 'approved_by'         =>  "Default Admin",
+                'request_type_id'     =>  1,
             ],
         ];
 

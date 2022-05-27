@@ -21,6 +21,9 @@ class CreateUserDetailsTable extends Migration
             $table->string('created_by')->nullable();
             $table->string('approved_by')->nullable();
             $table->timestamp('deleted_at')->nullable();
+            $table->unsignedInteger('request_type_id');
+            $table->boolean('is_approved')->nullable()->default(false);
+            $table->foreign('request_type_id')->references('id')->on('request_types')->onDelete('cascade');
             $table->timestamps();
         });
     }
