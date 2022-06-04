@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Validator;
 use JWTAuth;
 use Exception;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Models\AdminRequest;
+use Illuminate\Support\Facades\Auth;
 
 class RequestTypeController extends Controller
 {
@@ -36,19 +38,11 @@ class RequestTypeController extends Controller
     {
         $pending_requests = AdminRequest::where('status', 'pending')->get();
 
-        if (!$pending_requests) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No record found',
-                'data' => null
-            ], 404);
+        if ($pending_requests->exists()){
+            return $this->successWithData($pending_requests->get());
+        } else{
+            return $this->success('No Pending requests');
         }
-
-        return response()->json([
-            'success' => true,
-            'message' => null,
-            'data' => $pending_requests
-        ]);
     }
 
     /**
@@ -76,6 +70,11 @@ class RequestTypeController extends Controller
 
                     $statement = $this->databaseQuery($admin_request->payload, $admin_request->request_type_id, $admin_request->user_id);
                     if ($statement === true){
+                        $user_details = UserDetail::where('id', $admin_request->user_id)->first();
+                        if ($user_details->exists()) {
+                            $user_details->is_approved = true;
+                            $user_details->approved_by = Auth::user()->firstname . ' ' . Auth::user()->lastname;
+                        }
                         $admin_request->status = 'approved';
                         $admin_request->approver_id = $this->admin->id;
                         if ($admin_request->update()){
@@ -106,18 +105,18 @@ class RequestTypeController extends Controller
     {
         $credentials = $request->all();
         $validator = Validator::make($credentials, [
-            $validator = Validator::make($credentials, [
-                'request_id' => 'required',
-            ]);
+            'request_id' => 'required',
+        ]);
+
         if ($validator->fails()) {
             return $this->errorValidation($validator->errors());
         }
 
-        $admin_request = AdminRequest::where('id',$request->request_id);
+        $admin_request = AdminRequest::where('id', $request->request_id);
         if ($admin_request->exists()) {
             $admin_request = $admin_request->first();
-            if($admin_request->requester_id!=$this->admin->id){
-                if ($admin_request->status=='pending'){
+            if($admin_request->requester_id != $this->admin->id){
+                if ($admin_request->status == 'pending'){
                     $admin_request->status = 'declined';
                     $admin_request->approver_id = $this->admin->id;
                     if ($admin_request->update()){
@@ -129,25 +128,15 @@ class RequestTypeController extends Controller
                     return $this->error('Request already '.$admin_request->status);
                 }
             } else{
-                return $this->error('You are not authorised to approve this request',401);
+                return $this->error('You are not authorised to approve this request', 401);
             }
         }else{
             return $this->error('Request not found');
         }
     }
 
-    public function pendingRequests(){
-        $pending_requests = AdminRequest::where('status','pending');
-
-        if ($pending_requests->exists()){
-            return $this->successWithData($pending_requests->get());
-        } else{
-            return $this->success('No Pending requests');
-        }
-    }
-
-    public function allUsers(){
-        $users = User::all();
+    public function allUserDetails(){
+        $users = UserDetail::all();
         if($users->count()>0){
             return $this->successWithData($users);
         } else{
@@ -169,6 +158,7 @@ class RequestTypeController extends Controller
         $new_request = new AdminRequest();
         $new_request->requester_id = $this->admin->id;
         $new_request->request_type = 'create';
+        $new_request->request_type_id = 1;
         $new_request->payload = $credentials;
         $new_request->status = 'pending';
 
@@ -193,7 +183,7 @@ class RequestTypeController extends Controller
             return $this->errorValidation($validator->errors());
         }
 
-        $user = User::where('id', $credentials['user_id']);
+        $user = UserDetail::where('id', $credentials['user_id']);
 
         if ($user->exists()) {
 
@@ -201,6 +191,7 @@ class RequestTypeController extends Controller
             $new_request->requester_id = $this->admin->id;
             $new_request->user_id = $credentials['user_id'];
             $new_request->request_type = 'update';
+            $new_request->request_type_id = 2;
             $new_request->payload = $credentials;
             $new_request->status = 'pending';
 
@@ -215,7 +206,7 @@ class RequestTypeController extends Controller
         }
     }
 
-    public function deleteUserRequest($user_id){
+    public function deleteUserRequest(Request $request, $user_id){
         $credentials = $request->all();
         $validator = Validator::make($credentials, [
             'user_id' => 'required',
@@ -224,13 +215,14 @@ class RequestTypeController extends Controller
             return $this->errorValidation($validator->errors());
         }
 
-        $user = User::where('id', $user_id);
+        $user = UserDetail::where('id', $request->user_id);
 
         if ($user->exists()) {
             $new_request = new AdminRequest();
             $new_request->requester_id = $this->admin->id;
             $new_request->user_id = $request->user_id;
             $new_request->request_type = 'delete';
+            $new_request->request_type_id = 3;
             $new_request->status = 'pending';
 
             if($new_request->save()){
@@ -245,27 +237,28 @@ class RequestTypeController extends Controller
     }
 
     public function databaseQuery($data, $request_type, $user_id){
-        if ($request_type=='create'){
-            $user = new User();
+        if ($request_type == 'create'){
+            $user = new UserDetail();
             $user->email = $data['email'];
             $user->firstname = $data['firstname'];
             $user->lastname = $data['lastname'];
+            $user->created_by = Auth::user()->firstname . ' ' . Auth::user()->lastname;
 
             if($user->save()){
                 return true;
             } else{
                 return false;
             }
-        } elseif($request_type=='update'){
+        } elseif($request_type == 'update'){
             unset($data['user_id']);
-            $user = User::where('id',$user_id)->update($data);
+            $user = UserDetail::where('id', $user_id)->update($data);
             if($user){
                 return true;
             } else{
                 return false;
             }
-        }elseif($request_type=='delete'){
-            if(User::where('id',$user_id)->delete()){
+        }elseif($request_type == 'delete'){
+            if(UserDetail::where('id', $user_id)->delete()){
                 return true;
             } else{
                 return false;

@@ -39,7 +39,7 @@ Route::group(["prefix" => "v1"], function () {
             Route::get('fetch/all',                 [RequestTypeController::class, 'dispalyAllPendingRequests']);
             Route::put('approve',                   [RequestTypeController::class, 'approveRequest']);
             Route::put('decline',                   [RequestTypeController::class, 'declineRequest']);
-            Route::get('users',                     [RequestTypeController::class, 'allUsers']);
+            Route::get('users',                     [RequestTypeController::class, 'allUserDetails']);
             Route::post('create',                   [RequestTypeController::class, 'addUserRequest']);
             Route::patch('update',                  [RequestTypeController::class, 'updateUserRequest']);
             Route::delete('delete',                 [RequestTypeController::class, 'deleteUserRequest']);

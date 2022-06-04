@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class UserDetail extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     /*
      * The attributes that are mass assignable.
@@ -25,6 +26,18 @@ class UserDetail extends Model
         'approved_by',
         'request_type_id'
     ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'created_at' => 'datetime:Y-m-d h:i:s',
+        'updated_at' => 'datetime:Y-m-d h:i:s',
+    ];
+    protected $dateFormat = 'Y-m-d h:i:s';
 
     /**
      * Relationship with the type of request made for User Detail

@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Mail;
 use App\Models\User;
-use App\Models\UserInfo;
 use App\Mail\ApprovalRequest;
 use App\Events\RequestApprovalEvent;
 use App\Models\UserDetail;
@@ -15,9 +14,6 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Requests\CreateUserDetailRequest;
 use App\Http\Requests\UpdateUserDetailRequest;
 use Illuminate\Support\Facades\Validator;
-use JWTAuth;
-use Exception;
-use Tymon\JWTAuth\Exceptions\JWTException;
 
 class UserDetailController extends Controller
 {
