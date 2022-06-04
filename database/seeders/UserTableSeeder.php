@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use Illuminate\Support\Str;
@@ -37,7 +39,6 @@ class UserTableSeeder extends Seeder
             if (!$check_user) {
                 $user = User::create($value);
 
-                //factory(User::class, 2)->create();
                 User::factory()->count(2)->create();
             }
         }
