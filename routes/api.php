@@ -29,6 +29,7 @@ Route::group(["prefix" => "v1"], function () {
 
         Route::post('login', 'LoginController@login');
         Route::get('logout', 'LoginController@logout')->middleware("auth:api");
+        Route::post('register', 'LoginController@register');
     });
 
     //Authenticated Routes

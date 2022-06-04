@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use JWTAuth;
+use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller
 {
@@ -57,5 +59,34 @@ class LoginController extends Controller
             'message' => 'Successfully logged out',
             'data' => null
         ]);
+    }
+
+    //Register a User or Admin
+    public function register(Request $request)
+    {
+        //Validate data
+        $data = $request->only('firstname', 'lastname', 'email', 'password');
+        $validator = Validator::make($data, [
+            'firstname' => 'required|string|min:2|max:50',
+            'lastname' => 'required|string|min:2|max:50',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:4'
+        ]);
+
+        //Send failed response if request is not valid
+        if ($validator->fails()) {
+            return $this->errorValidation($validator->errors());
+        }
+
+        //Request is valid, create new user
+        $user = User::create([
+            'firstname' => $request->firstname,
+            'lastname' => $request->lastname,
+            'email' => $request->email,
+            'password' => bcrypt($request->password)
+        ]);
+
+        //User created, return success response
+        return $this->successWithData($user,'Admin created successfully');
     }
 }
