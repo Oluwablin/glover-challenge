@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserDetailController;
+use App\Http\Controllers\RequestTypeController;
+use App\Http\Controllers\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +39,10 @@ Route::group(["prefix" => "v1"], function () {
             Route::get('fetch/all',                 [RequestTypeController::class, 'dispalyAllPendingRequests']);
             Route::put('approve',                   [RequestTypeController::class, 'approveRequest']);
             Route::put('decline',                   [RequestTypeController::class, 'declineRequest']);
+            Route::get('users',                     [RequestTypeController::class, 'allUsers']);
+            Route::post('create',                   [RequestTypeController::class, 'addUserRequest']);
+            Route::patch('update',                  [RequestTypeController::class, 'updateUserRequest']);
+            Route::delete('delete',                 [RequestTypeController::class, 'deleteUserRequest']);
         });
 
         //UserDetails

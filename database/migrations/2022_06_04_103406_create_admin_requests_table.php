@@ -20,7 +20,9 @@ class CreateAdminRequestsTable extends Migration
             $table->string('user_id')->nullable();
             $table->string('request_type');
             $table->json('payload')->nullable();
-            $table->string('status');
+            $table->unsignedInteger('request_type_id');
+            $table->enum('status', ['pending', 'declined', 'approved']);
+            $table->foreign('request_type_id')->references('id')->on('request_types')->onDelete('cascade');
             $table->timestamps();
         });
     }

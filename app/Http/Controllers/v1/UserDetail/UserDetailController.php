@@ -18,11 +18,9 @@ use Illuminate\Support\Facades\Validator;
 use JWTAuth;
 use Exception;
 use Tymon\JWTAuth\Exceptions\JWTException;
-use Illuminate\Support\Facades\Auth;
 
 class UserDetailController extends Controller
 {
-
     /**
      * Create new resource.
      *

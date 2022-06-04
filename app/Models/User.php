@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use App\Http\Middleware\Authenticate;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements JWTSubject
+class User extends Authenticate implements JWTSubject
 {
-    use Notifiable, SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes;
 
     /*
      * The attributes that are mass assignable.
@@ -43,25 +46,25 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'created_at' => 'datetime:Y-m-d h:i:s',
+        'updated_at' => 'datetime:Y-m-d h:i:s',
     ];
+    protected $dateFormat = 'Y-m-d h:i:s';
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed
      */
-    public function getJWTIdentifier()
-    {
+    public function getJWTIdentifier() {
         return $this->getKey();
     }
-
     /**
      * Return a key value array, containing any custom claims to be added to the JWT.
      *
      * @return array
      */
-    public function getJWTCustomClaims()
-    {
+    public function getJWTCustomClaims() {
         return [];
     }
 }
