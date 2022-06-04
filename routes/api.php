@@ -2,9 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserDetailController;
-use App\Http\Controllers\RequestTypeController;
-use App\Http\Controllers\LoginController;
+use App\Http\Controllers\v1\UserDetail\UserDetailController;
+use App\Http\Controllers\v1\RequestType\RequestTypeController;
+use App\Http\Controllers\v1\Auth\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,9 +27,9 @@ Route::group(["prefix" => "v1"], function () {
     // authentication
     Route::group(['prefix' => 'auth', 'namespace' => 'v1\Auth'], function () {
 
-        Route::post('login', 'LoginController@login');
-        Route::get('logout', 'LoginController@logout')->middleware("auth:api");
-        Route::post('register', 'LoginController@register');
+        Route::post('login',                        [LoginController::class, 'login']);
+        Route::get('logout',                        [LoginController::class, 'logout'])->middleware("auth:api");
+        Route::post('register',                     [LoginController::class, 'register']);
     });
 
     //Authenticated Routes
