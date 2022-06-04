@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Factories;
+
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -17,7 +19,7 @@ use Illuminate\Support\Str;
 | model instances for testing / seeding your application's database.
 |
 */
-class UserDetailFactory extends Factory
+class UserFactory extends Factory
 {
 
     public function definition()

@@ -10,6 +10,7 @@ use App\Models\AdminRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use JWTAuth;
 
 class GloverChallengeTest extends TestCase
 {
@@ -57,7 +58,10 @@ class GloverChallengeTest extends TestCase
     {
 
         $user = UserDetail::factory()->create();
-        $response = $this->json('DELETE', '/api/v1/request/delete/'.$user->id);
+        $data = [
+            'user_id' => $user->id,
+        ];
+        $response = $this->json('DELETE', '/api/v1/request/delete', $data);
         $response->assertStatus(401);
     }
     public function testRequestThatArePendingList()
@@ -116,7 +120,7 @@ class GloverChallengeTest extends TestCase
         $token = JWTAuth::fromUser($admin);
         $data = [
             'firstname' => "Ben",
-            'user_id'=>$user->id
+            'user_id' => $user->id,
         ];
         $admin_request = AdminRequest::factory()->create([
             'payload'=>$data,
@@ -126,7 +130,7 @@ class GloverChallengeTest extends TestCase
 
         ]);
 
-        $response = $this->json('GET', '/api/v1/request/approve/'.$admin_request->id,[],['Authorization' => "Bearer $token"]);
+        $response = $this->json('PUT', '/api/v1/request/approve',['request_id' => $admin_request->id],['Authorization' => "Bearer $token"]);
         $response->assertStatus(401);
     }
     public function testApproveARequestIfItsAnotherAdmin()
@@ -136,7 +140,7 @@ class GloverChallengeTest extends TestCase
         $admin = User::factory()->create();
         $data = [
             'firstname' => "Ben",
-            'user_id'=>$user->id
+            'user_id' => $user->id,
         ];
         $admin_request = AdminRequest::factory()->create([
             'payload'=>$data,
@@ -150,7 +154,7 @@ class GloverChallengeTest extends TestCase
         $admin2 = User::factory()->create();
         $token2 = JWTAuth::fromUser($admin2);
 
-        $response2 = $this->json('GET', '/api/v1/request/approve/'.$admin_request->id,[],['Authorization' => "Bearer $token2"]);
+        $response2 = $this->json('PUT', '/api/v1/request/approve',['request_id' => $admin_request->id],['Authorization' => "Bearer $token2"]);
         $response2->assertStatus(200);
     }
 
@@ -171,7 +175,7 @@ class GloverChallengeTest extends TestCase
 
         ]);
 
-        $response = $this->json('GET', '/api/v1/request/decline/'.$admin_request->id,[],['Authorization' => "Bearer $token"]);
+        $response = $this->json('PUT', '/api/v1/request/decline',['request_id' => $admin_request->id],['Authorization' => "Bearer $token"]);
         $response->assertStatus(401);
     }
     public function testDeclineARequestIfItsAnotherAdmin()
@@ -195,7 +199,7 @@ class GloverChallengeTest extends TestCase
         $admin2 = User::factory()->create();
         $token2 = JWTAuth::fromUser($admin2);
 
-        $response2 = $this->json('GET', '/api/v1/request/decline/'.$admin_request->id,[],['Authorization' => "Bearer $token2"]);
+        $response2 = $this->json('PUT', '/api/v1/request/decline',['request_id' => $admin_request->id],['Authorization' => "Bearer $token2"]);
         $response2->assertStatus(200);
     }
 }

@@ -29,7 +29,6 @@ class UserDetailFactory extends Factory
             'lastname' => $this->faker->lastname(),
             'email' => $this->faker->unique()->safeEmail,
             'created_by' => $this->faker->firstname() . ' ' . $this->faker->lastname(),
-            'request_type_id' => $this->faker->unique()->numberBetween(0, 4),
         ];
     }
 }

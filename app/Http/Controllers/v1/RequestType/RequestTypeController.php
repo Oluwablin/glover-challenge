@@ -36,7 +36,7 @@ class RequestTypeController extends Controller
      */
     public function dispalyAllPendingRequests()
     {
-        $pending_requests = AdminRequest::where('status', 'pending')->get();
+        $pending_requests = AdminRequest::where('status', 'pending');
 
         if ($pending_requests->exists()){
             return $this->successWithData($pending_requests->get());
@@ -65,18 +65,18 @@ class RequestTypeController extends Controller
         $admin_request = AdminRequest::where('id', $request->request_id);
         if ($admin_request->exists()) {
             $admin_request = $admin_request->first();
-            if($admin_request->requester_id != $this->admin->id){
+            if($admin_request->requester_id != Auth::id()){
                 if ($admin_request->status == 'pending'){
 
-                    $statement = $this->databaseQuery($admin_request->payload, $admin_request->request_type_id, $admin_request->user_id);
+                    $statement = $this->databaseQuery($admin_request->payload, $admin_request->request_type, $admin_request->user_id);
                     if ($statement === true){
-                        $user_details = UserDetail::where('id', $admin_request->user_id)->first();
+                        $user_details = UserDetail::where('id', $admin_request->user_id);
                         if ($user_details->exists()) {
                             $user_details->is_approved = true;
                             $user_details->approved_by = Auth::user()->firstname . ' ' . Auth::user()->lastname;
                         }
                         $admin_request->status = 'approved';
-                        $admin_request->approver_id = $this->admin->id;
+                        $admin_request->approver_id = Auth::id();
                         if ($admin_request->update()){
                             return $this->success();
                         }
@@ -115,10 +115,10 @@ class RequestTypeController extends Controller
         $admin_request = AdminRequest::where('id', $request->request_id);
         if ($admin_request->exists()) {
             $admin_request = $admin_request->first();
-            if($admin_request->requester_id != $this->admin->id){
+            if($admin_request->requester_id != Auth::id()){
                 if ($admin_request->status == 'pending'){
                     $admin_request->status = 'declined';
-                    $admin_request->approver_id = $this->admin->id;
+                    $admin_request->approver_id = Auth::id();
                     if ($admin_request->update()){
                         return $this->success('Decline successful');
                     } else{
@@ -156,9 +156,9 @@ class RequestTypeController extends Controller
         }
 
         $new_request = new AdminRequest();
-        $new_request->requester_id = $this->admin->id;
+        $new_request->requester_id = Auth::id();
         $new_request->request_type = 'create';
-        $new_request->request_type_id = 1;
+        //$new_request->request_type_id = 1;
         $new_request->payload = $credentials;
         $new_request->status = 'pending';
 
@@ -191,7 +191,7 @@ class RequestTypeController extends Controller
             $new_request->requester_id = $this->admin->id;
             $new_request->user_id = $credentials['user_id'];
             $new_request->request_type = 'update';
-            $new_request->request_type_id = 2;
+            //$new_request->request_type_id = 2;
             $new_request->payload = $credentials;
             $new_request->status = 'pending';
 
@@ -206,7 +206,7 @@ class RequestTypeController extends Controller
         }
     }
 
-    public function deleteUserRequest(Request $request, $user_id){
+    public function deleteUserRequest(Request $request){
         $credentials = $request->all();
         $validator = Validator::make($credentials, [
             'user_id' => 'required',
@@ -222,7 +222,7 @@ class RequestTypeController extends Controller
             $new_request->requester_id = $this->admin->id;
             $new_request->user_id = $request->user_id;
             $new_request->request_type = 'delete';
-            $new_request->request_type_id = 3;
+            //$new_request->request_type_id = 3;
             $new_request->status = 'pending';
 
             if($new_request->save()){
