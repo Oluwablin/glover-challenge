@@ -8,7 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Mail\ApprovalRequest;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 
 class SendEmailJob implements ShouldQueue
@@ -33,7 +33,7 @@ class SendEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        $email = new ApprovalRequest();
-        Mail::to($this->send_mail)->send($email);
+        Mail::to($this->send_mail)
+        ->send(new ApprovalRequest($this->send_mail));
     }
 }

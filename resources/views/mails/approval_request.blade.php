@@ -13,9 +13,9 @@
         </h2>
     </center>
 
-    <h3>Dear {{$user->name}},</h3>
+    <h3>Hello,</h3>
 
-    <p> is to notify you that a new approval request has been sent waiting for your approval.</p>
+    <p>This is to notify you that a new approval request has been sent waiting for your approval.</p>
 
     <p>Use the link below to view all pending requests.</p>
     <p><a href="{{ url('/api/v1/request/fetch/all') }}">Pending Requests</a></p>

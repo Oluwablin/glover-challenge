@@ -19,12 +19,12 @@ class UserDetail extends Model
     protected $guarded = [''];
 
     protected $fillable = [
-        'firsname',
+        'firstname',
         'lastname',
         'email',
         'created_by',
         'approved_by',
-        'request_type_id'
+        'is_approved'
     ];
 
     /**

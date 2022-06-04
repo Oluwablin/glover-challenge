@@ -15,7 +15,7 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests, JSONResponse;
 
     public function sendMail($user_id){
-        $users = User::where('id','!=',$user_id)->get();
+        $users = User::where('id', '!=', $user_id)->get();
         foreach ($users as $user){
             SendEmailJob::dispatch($user->email);
         }

@@ -31,6 +31,8 @@ class ApprovalRequest extends Mailable
      */
     public function build()
     {
-        return $this->markdown('mails.approval_request')->subject('New Approval Request');
+        return $this->from('noreply@gloverapp.com', 'GloverApp')
+        ->subject('New Approval Request')
+        ->view('mails.approval_request');
     }
 }

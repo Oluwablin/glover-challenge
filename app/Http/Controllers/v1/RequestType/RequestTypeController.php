@@ -5,7 +5,7 @@ namespace App\Http\Controllers\v1\RequestType;
 use App\Models\RequestType;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 use App\Mail\ApprovalRequest;
 use App\Events\RequestApprovalEvent;
@@ -70,10 +70,13 @@ class RequestTypeController extends Controller
 
                     $statement = $this->databaseQuery($admin_request->payload, $admin_request->request_type, $admin_request->user_id);
                     if ($statement === true){
-                        $user_details = UserDetail::where('id', $admin_request->user_id);
-                        if ($user_details->exists()) {
+                        $user_details = UserDetail::where('email', $admin_request->payload['email'])->first();
+                        if ($user_details) {
+                            $created_by = User::where('id', $admin_request->requester_id)->first();
+                            $user_details->created_by = $created_by->firstname . ' ' . $created_by->lastname;
                             $user_details->is_approved = true;
                             $user_details->approved_by = Auth::user()->firstname . ' ' . Auth::user()->lastname;
+                            $user_details->update();
                         }
                         $admin_request->status = 'approved';
                         $admin_request->approver_id = Auth::id();
@@ -163,7 +166,7 @@ class RequestTypeController extends Controller
         $new_request->status = 'pending';
 
         if($new_request->save()){
-            $this->sendMail($this->admin->id);
+            $this->sendMail(Auth::id());
 
             return $this->success('Request submitted successfully. Please wait for approval');
         } else{
@@ -188,7 +191,7 @@ class RequestTypeController extends Controller
         if ($user->exists()) {
 
             $new_request = new AdminRequest();
-            $new_request->requester_id = $this->admin->id;
+            $new_request->requester_id = Auth::id();
             $new_request->user_id = $credentials['user_id'];
             $new_request->request_type = 'update';
             //$new_request->request_type_id = 2;
@@ -196,7 +199,7 @@ class RequestTypeController extends Controller
             $new_request->status = 'pending';
 
             if ($new_request->save()) {
-                $this->sendMail($this->admin->id);
+                $this->sendMail(Auth::id());
                 return $this->success('Request submitted successfully. Please wait for approval');
             } else {
                 return $this->error();
@@ -219,14 +222,14 @@ class RequestTypeController extends Controller
 
         if ($user->exists()) {
             $new_request = new AdminRequest();
-            $new_request->requester_id = $this->admin->id;
+            $new_request->requester_id = Auth::id();
             $new_request->user_id = $request->user_id;
             $new_request->request_type = 'delete';
             //$new_request->request_type_id = 3;
             $new_request->status = 'pending';
 
             if($new_request->save()){
-                $this->sendMail($this->admin->id);
+                $this->sendMail(Auth::id());
                 return $this->success('Request submitted successfully. Please wait for approval');
             } else{
                 return $this->error();
@@ -242,7 +245,6 @@ class RequestTypeController extends Controller
             $user->email = $data['email'];
             $user->firstname = $data['firstname'];
             $user->lastname = $data['lastname'];
-            $user->created_by = Auth::user()->firstname . ' ' . Auth::user()->lastname;
 
             if($user->save()){
                 return true;
