@@ -14,9 +14,15 @@ use App\Models\UserDetail;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\CreateUserDetailRequest;
 use App\Http\Requests\UpdateUserDetailRequest;
+use Illuminate\Support\Facades\Validator;
+use JWTAuth;
+use Exception;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Facades\Auth;
 
 class UserDetailController extends Controller
 {
+
     /**
      * Create new resource.
      *
@@ -25,6 +31,16 @@ class UserDetailController extends Controller
      */
     public function createUserDetails(CreateUserDetailRequest $request)
     {
+        $credentials = $request->all();
+        $validator = Validator::make($credentials, [
+            'email' => 'required|email',
+            'firstname' => 'required|string',
+            'lastname' => 'required|string',
+        ]);
+        if ($validator->fails()) {
+            return $this->errorValidation($validator->errors());
+        }
+
         try {
             DB::beginTransaction();
 
@@ -48,7 +64,7 @@ class UserDetailController extends Controller
             }
                 return response()->json([
                     'success' => true,
-                    'message' => 'User Details created successfully',
+                    'message' => 'User Details Creation request successfully, Please wait for approval',
                     'data' => $user_details,
                 ], 201);
             }
@@ -56,7 +72,7 @@ class UserDetailController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Error, User Details could not be created',
+                'message' => 'Error, User Details Creation request could not be created',
                 'data' => null,
             ], 500);
         } catch (\Throwable $th) {
